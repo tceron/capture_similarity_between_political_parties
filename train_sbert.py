@@ -58,7 +58,7 @@ def eval(data_dir, output_dir, model=True):
 
 
 def run_trainsbert(years):
-    folders = [ "by_party", "annotated_sections"]
+    folders = [ "by_party", "by_domain"]
     print(folders)
 
     for folder in folders:
@@ -68,11 +68,3 @@ def run_trainsbert(years):
         data_dir = f"triplets/{folder}/{years}"
         train(data_dir, output_dir)
         eval(data_dir, output_dir, False)
-    else:
-        model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
-        for folder in folders:
-            output_dir = f"./outputs/non_finetuned/{folder}/{years}"
-            print(output_dir)
-            Path(output_dir).mkdir(parents=True, exist_ok=True)
-            data_dir = f"triplets/{folder}/{years}"
-            eval(data_dir, output_dir, model)
