@@ -106,7 +106,7 @@ def get_representations_datasets(finetuning_year, train=False):
             df = pd.read_csv("./data/manifestos.csv", index_col=0)
         print(dataset, "len dataset: ", len(df))
 
-        for m in models[-1:]:
+        for m in models:
 
             if "outputs" in m:
                 name_m = m.split("/")[-2]
