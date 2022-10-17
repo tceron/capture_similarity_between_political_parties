@@ -12,8 +12,10 @@ Even though fine-tuned neural language models have been pivotal in enabling “d
 First create a new environment and install the necessary packages:
 
     python3 -m venv venv
+    
+    source venv/bin/activate
 
-    python3 install -r requirements.txt
+    pip install -r requirements.txt
 
 If you'd like to train SBERT from scratch, run:
 
