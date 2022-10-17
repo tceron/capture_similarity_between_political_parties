@@ -1,9 +1,7 @@
 from sentence_transformers import util  #SentenceTransformer
 import pandas as pd
 import torch
-from pathlib import Path
 from os.path import join
-import glob
 import pickle
 from collections import defaultdict
 from itertools import combinations
@@ -131,16 +129,13 @@ def compute_distance_seq_with_domain(mat, output_dir, kernel=None, bias=None, sa
 
 def compute_distances(do_whiten=False):
     models_emb = glob.glob("./embeddings/*/*/*/embeddings.p")
-    models_emb.extend(glob.glob("./embeddings_papermodel/*/*/*/embeddings.p"))
-    print(models_emb)
 
     for model_emb in models_emb:
         print(model_emb)
 
         mat = pickle.load(open(model_emb, "rb"))
-        print(mat.shape)
         kernel, bias = compute_kernel_bias(mat[:, :-2].astype(float), None)  # k=None - no dimensionality reduction
-        output_dir = f"./results_replication/no_domain/" + "whiten" + "/" + join(*list(Path(model_emb).parts[1:-1]))
+        output_dir = f"./results_hub/no_domain/" + "whiten" + "/" + join(*list(Path(model_emb).parts[1:-1]))
 
         if do_whiten:
             print(output_dir)

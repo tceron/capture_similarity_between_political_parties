@@ -9,7 +9,6 @@ import shutil
 import pandas as pd
 import torch
 from pathlib import Path
-import glob
 import pickle
 import numpy as np
 from nltk.corpus import stopwords
@@ -22,6 +21,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def sbert_representations(sentences, type_model):
+    print(f"Loading {type_model}...")
     model = SentenceTransformer(type_model)
     embeddings = model.encode(sentences, convert_to_tensor=True).cpu().detach().numpy()
 
@@ -29,6 +29,7 @@ def sbert_representations(sentences, type_model):
 
 
 def bert_representations(sentences, type_model):
+    print(f"Loading {type_model}...")
     model = AutoModel.from_pretrained(type_model, return_dict=True, output_hidden_states=True).to(device)
     tokenizer = AutoTokenizer.from_pretrained(type_model)
 
@@ -44,14 +45,13 @@ def bert_representations(sentences, type_model):
     return embeddings
 
 def fasttext_representations(sentences):
-    print("Downloading fasttext from general trained model for German...")
     url = "https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.de.300.bin.gz"
-    # wget.download(url)
-    # with gzip.open(url.split("/")[-1], 'rb') as f_in:
-    #     with open(url.split("/")[-1].replace(".gz", ""), 'wb') as f_out:
-    #         shutil.copyfileobj(f_in, f_out)
+    wget.download(url)
+    with gzip.open(url.split("/")[-1], 'rb') as f_in:
+        with open(url.split("/")[-1].replace(".gz", ""), 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
 
-    print("Loading fasttext...")
+    print(f"Loading fasttext model...")
     model = fasttext.load_model(url.split("/")[-1].replace(".gz", ""))
 
     german_stop_words = stopwords.words('german')
@@ -87,16 +87,17 @@ def get_embeddings(df, output_dir, type_model=None):
     pickle.dump(embeddings, open(f"{output_dir}/embeddings.p", "wb"))
 
 
-def get_representations_datasets(finetuning_year):
+def get_representations_datasets(finetuning_year, train=False):
 
-    models = [
-            # f"../party_proximity/outputs/fine_tuned/annotated_sections/{finetuning_year}",
-              # f"./outputs/fine_tuned/annotated_sections/{finetuning_year}",
-              # f"./outputs/fine_tuned/by_party/{finetuning_year}",
-              # f"../party_proximity/outputs/fine_tuned/by_party/{finetuning_year}"
-              "fasttext_emb", "paraphrase-multilingual-mpnet-base-v2",
-              "xlm-roberta-base", "bert-base-german-cased"
-              ]
+    outdir = "embeddings"
+    models = ["fasttext_emb", "paraphrase-multilingual-mpnet-base-v2",
+              "xlm-roberta-base", "bert-base-german-cased"]
+    if train:
+        models.extend([f"./outputs/fine_tuned/by_domain/{finetuning_year}",
+                      f"./outputs/fine_tuned/by_party/{finetuning_year}"])
+    else:
+        models.extend(["tceron/sentence-transformers-party-similarity-by-domain",
+                       "tceron/sentence-transformers-party-similarity-by-party"])
 
     for dataset in ["manifesto", "claim_identifier"]:  #, manifesto] corresponds to all sentences
         if dataset=="claim_identifier":
@@ -105,14 +106,16 @@ def get_representations_datasets(finetuning_year):
             df = pd.read_csv("./data/manifestos.csv", index_col=0)
         print(dataset, "len dataset: ", len(df))
 
-        for m in models:
-            print(m)
+        for m in models[-1:]:
 
             if "outputs" in m:
                 name_m = m.split("/")[-2]
-                output_dir = f"./embeddings/{name_m}/{finetuning_year}/{dataset}"
+                output_dir = f"./{outdir}/{name_m}/{finetuning_year}/{dataset}"
+            elif "tceron" in m:
+                name_m = m.split("/")[-1]
+                output_dir = f"./{outdir}/{name_m}/{finetuning_year}/{dataset}"
             else:
-                output_dir = f"./embeddings/{m}/{finetuning_year}/{dataset}"
+                output_dir = f"./{outdir}/{m}/{finetuning_year}/{dataset}"
             print(output_dir)
             Path(output_dir).mkdir(exist_ok=True, parents=True)
 

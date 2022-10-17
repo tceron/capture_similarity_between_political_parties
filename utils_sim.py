@@ -100,8 +100,9 @@ def compute_mantel(cat_arr, text_arr):
 
 def correlation_matrices(analysis_year):
     results=[]
-    files = glob.glob(f"./results_papermodel/*/*/*/*/*/cosine_scores/*.csv")
-    files.extend(glob.glob(f"./results_papermodel/*/*/*/*/cosine_scores/*.csv"))
+    files = glob.glob(f"./results/*/*/*/*/*/cosine_scores/*.csv")
+    print(files)
+    # files.extend(glob.glob(f"./results_papermodel/*/*/*/*/cosine_scores/*.csv"))
 
     df_gold = pd.read_csv(f"./data/ground_truth/hamming_wom_claim_{analysis_year}.csv", index_col=0)
     cat_dist_mat = df_gold.to_numpy()
@@ -109,24 +110,22 @@ def correlation_matrices(analysis_year):
 
     for file in files:
 
-        if "annotated" in file or "by_part" in file:
+        f = file.split("/")
+        df = pd.read_csv(file, index_col=0)
+        df.index = df.columns
 
-            f = file.split("/")
-            df = pd.read_csv(file, index_col=0)
-            df.index = df.columns
+        text_arr = df.reindex(cat_parties)  #reordering indexes to correspond with categorical distance matrix
+        text_arr = 1-text_arr[cat_parties].to_numpy()  #reordering columns
 
-            text_arr = df.reindex(cat_parties)  #reordering indexes to correspond with categorical distance matrix
-            text_arr = 1-text_arr[cat_parties].to_numpy()  #reordering columns
+        r_corr, p_val = compute_mantel(cat_dist_mat, text_arr)
 
-            r_corr, p_val = compute_mantel(cat_dist_mat, text_arr)
-
-            results.append({"dataset":f[-3], "fine_tuning":f[-5], "post_proc":f[-6], "similarity_comput":f[-7],   #.split("_")[0]
-                               "analysis_year":analysis_year, "finetuning_year":f[-4], "r":round(r_corr, 2), "pval":round(p_val, 4)})
+        results.append({"dataset":f[-3], "fine_tuning":f[-5], "post_proc":f[-6], "similarity_comput":f[-7],   #.split("_")[0]
+                           "analysis_year":analysis_year, "finetuning_year":f[-4], "r":round(r_corr, 2), "pval":round(p_val, 4)})
 
     df = pd.DataFrame.from_dict(results)
+    df.to_csv(f"./results/correlation.csv")
     for dataset in [["manifesto", "manifesto_claim_quote"], ["claim_identifier", "claim_identifier_claim_quote"]]:
         tmp = df[df["dataset"].isin(dataset)]
         tmp = tmp.sort_values(by=['fine_tuning'], ascending=False)
-        # df.to_csv(f"./results/correlation.csv")
         print(tmp.head(40))
         print()
