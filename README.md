@@ -27,6 +27,7 @@ However, bear in mind that the results of the SBERTpart and SBERTdomain models w
 ### Citations
 
 Our work can be cited as: 
+
 @inproceedings{ceron2022,
  author = {Ceron, Tanise and Blokker, Nico and Pad{\'o} Sebastian},
  booktitle = {Proceedings of the 26th Conference on Computational Natural Language Learning},
@@ -38,6 +39,7 @@ Our work can be cited as:
 
 
 If you're using the manifesto dataset found in this paper, make sure to cite: 
+
 @article{manifesto, title = {Manifesto Corpus. Version: 2021.1}, author = {Burst, Tobias and Krause, Werner and Lehmann, Pola and
 Lewandowski, Jirka and Matthieß, Theres and Merz, Nicolas and Regel, Sven and Zehnter, Lisa}, year = {2021}, journal = {Berlin: WZB Berlin Social Science Center.} }
 
