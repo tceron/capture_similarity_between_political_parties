@@ -94,7 +94,7 @@ def categorical_distance_matrices_claims():
     return dist_cat
 
 def compute_mantel(cat_arr, text_arr):
-    r, pval, z = mantel.test(cat_arr, text_arr, perms=10000, method='spearman', tail='upper')
+    r, pval, z = mantel.test(cat_arr, text_arr, perms=10000, method='spearman', tail='two-tail')
     return r, pval
 
 
