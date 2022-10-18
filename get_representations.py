@@ -13,10 +13,7 @@ import torch
 from pathlib import Path
 import pickle
 import numpy as np
-from nltk.corpus import stopwords
-import nltk
 from sklearn.preprocessing import LabelEncoder
-nltk.download('stopwords')
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -57,11 +54,9 @@ def fasttext_representations(sentences):
     print(f"Loading fasttext model...")
     model = fasttext.load_model(url.split("/")[-1].replace(".gz", ""))
 
-    german_stop_words = stopwords.words('german')
     embeddings=[]
     for sent in sentences:
-        sent=fasttext.tokenize(sent)
-        tokens = [t for t in sent if t not in german_stop_words] #CountVectorizer(stop_words=german_stop_words)
+        tokens=fasttext.tokenize(sent)
         embs =  np.vstack([model[t] for t in tokens]).mean(0)
         embeddings.append(embs)
     return embeddings
