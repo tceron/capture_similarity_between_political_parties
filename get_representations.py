@@ -1,3 +1,5 @@
+import os.path
+
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModel
 
@@ -46,10 +48,11 @@ def bert_representations(sentences, type_model):
 
 def fasttext_representations(sentences):
     url = "https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.de.300.bin.gz"
-    wget.download(url)
-    with gzip.open(url.split("/")[-1], 'rb') as f_in:
-        with open(url.split("/")[-1].replace(".gz", ""), 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    if not os.path.exists("cc.de.300.bin"):
+        wget.download(url)
+        with gzip.open(url.split("/")[-1], 'rb') as f_in:
+            with open(url.split("/")[-1].replace(".gz", ""), 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
 
     print(f"Loading fasttext model...")
     model = fasttext.load_model(url.split("/")[-1].replace(".gz", ""))

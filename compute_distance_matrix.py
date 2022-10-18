@@ -135,7 +135,7 @@ def compute_distances(do_whiten=False):
 
         mat = pickle.load(open(model_emb, "rb"))
         kernel, bias = compute_kernel_bias(mat[:, :-2].astype(float), None)  # k=None - no dimensionality reduction
-        output_dir = f"./results_hub/no_domain/" + "whiten" + "/" + join(*list(Path(model_emb).parts[1:-1]))
+        output_dir = f"./results/no_domain/" + "whiten" + "/" + join(*list(Path(model_emb).parts[1:-1]))
 
         if do_whiten:
             print(output_dir)
