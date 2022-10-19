@@ -121,8 +121,9 @@ def correlation_matrices(analysis_year):
 
     df = pd.DataFrame.from_dict(results)
     df.to_csv(f"./results/correlation.csv")
-    for dataset in [["manifesto", "manifesto_claim_quote"], ["claim_identifier", "claim_identifier_claim_quote"]]:
-        tmp = df[df["dataset"].isin(dataset)]
+    datasets = set(df.dataset.tolist())
+    for dataset in datasets:
+        tmp = df[df["dataset"] == dataset]
         tmp = tmp.sort_values(by=['fine_tuning'], ascending=False)
         print(tmp.head(40))
         print()
