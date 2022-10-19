@@ -101,9 +101,6 @@ def compute_mantel(cat_arr, text_arr):
 def correlation_matrices(analysis_year):
     results=[]
     files = glob.glob(f"./results/*/*/*/*/*/cosine_scores/*.csv")
-    print(files)
-    # files.extend(glob.glob(f"./results_papermodel/*/*/*/*/cosine_scores/*.csv"))
-
     df_gold = pd.read_csv(f"./data/ground_truth/hamming_wom_claim_{analysis_year}.csv", index_col=0)
     cat_dist_mat = df_gold.to_numpy()
     cat_parties = df_gold.columns
