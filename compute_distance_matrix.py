@@ -44,10 +44,9 @@ def compute_distance_seq(mat, output_dir, kernel=None, bias=None, save_cosine=Tr
                         sent_index[j].append(cosine_scores[i][j])
 
             else:
-                for i in range(cosine_scores.shape[0] - 1):   #shape 0 and 1 are actually the same here
+                for i in range(cosine_scores.shape[0] - 1):  
                     for j in range(i + 1, cosine_scores.shape[1]):
                         sent_index[i].append(cosine_scores[i][j])
-                        sent_index[j].append(cosine_scores[i][j])
 
             for idx, score in sent_index.items():
                 # print(len(score), len(set(score)))
@@ -107,7 +106,6 @@ def compute_distance_seq_with_domain(mat, output_dir, kernel=None, bias=None, sa
         for i in range(len(cosine_scores) - 1):
             for j in range(i + 1, len(cosine_scores)):
                 avg_scores[(parties[i], parties[j])].append(cosine_scores[i][j])
-                avg_scores[(parties[j], parties[i])].append(cosine_scores[i][j])
 
     results=[]
     for k in avg_scores.keys():
